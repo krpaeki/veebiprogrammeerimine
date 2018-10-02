@@ -1,4 +1,7 @@
-Anonüümsed sõnumid
+Anonüümsed sõnumid:
 
-CREATE TABLE `if18_kristian_kp_1`.`vpamsg` ( `ID` INT(11) NOT NULL AUTO_INCREMENT , `time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , `message` VARCHAR(256) NOT NULL , `validator` INT(11) NULL , `valid` INT(1) NULL , `validated` TIMESTAMP NULL , PRIMARY KEY (`ID`)) ENGINE = InnoDB;
+	CREATE TABLE `if18_kristian_kp_1`.`vpamsg` ( `ID` INT(11) NOT NULL AUTO_INCREMENT , `time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , `message` VARCHAR(256) NOT NULL , `validator` INT(11) NULL , `valid` INT(1) NULL , `validated` TIMESTAMP NULL , PRIMARY KEY (`ID`)) ENGINE = InnoDB;
 
+Kasutajad:
+
+	CREATE TABLE `if18_kristian_kp_1`.`vpusers` ( `ID` INT(11) NOT NULL AUTO_INCREMENT , `name` VARCHAR(30) NOT NULL , `surname` VARCHAR(30) NOT NULL , `email` VARCHAR(100) NOT NULL , `gender` VARCHAR(1) NOT NULL , `birthDate` DATE NOT NULL , `password` VARCHAR(60) NOT NULL , `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`ID`)) ENGINE = InnoDB;
