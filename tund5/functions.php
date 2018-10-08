@@ -15,7 +15,7 @@ $database = "if18_kristian_kp_1";
 		$pwdhash = password_hash($password, PASSWORD_BCRYPT, $options);
 		$stmt -> bind_param("sssiss", $name, $surname, $email, $gender, $birthDate, $pwdhash);
 		if ($stmt -> execute()){
-			$notice = "ok";
+			$notice = "Good job!";
 		} else {
 			$notice = "error";
 		}
