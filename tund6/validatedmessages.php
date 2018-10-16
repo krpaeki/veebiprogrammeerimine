@@ -13,7 +13,7 @@
 	  exit();
   }
   
-  $notice = readallunvalidatedmessages();
+  $messagesByUser = readallunvalidatedmessages();
 ?>
 <!DOCTYPE html>
 <html>
@@ -22,7 +22,7 @@
   <title>Anonüümsed sõnumid</title>
 </head>
 <body>
-  <h1>Sõnumid</h1>
+  <h1>Valideeritud anonüümsed sõnumid</h1>
   <p>Siin on minu <a href="http://www.tlu.ee">TLÜ</a> õppetöö raames valminud veebilehed. Need ei oma mingit sügavat sisu ja nende kopeerimine ei oma mõtet. <a href="?logout=1">Logi välja!</a></p>
   <hr>
   <ul>

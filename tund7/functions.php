@@ -5,14 +5,17 @@ $database = "if18_kristian_kp_1";
 	//alustan sessiooni
 	session_start();
 	
-	function readallvalidatedmessagesbyuser();
-		$msghtml = ""
+	function readallvalidatedmessagesbyuser(){
+		$result = "";
+		$msghtml = "";
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUserName"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
-		$stmt = mysqli->prepare("SELECT id, firstname, lastname FROM vpusers");
+		$stmt = $mysqli->prepare("SELECT id, name, surname FROM vpusers");
+		
 		echo $mysqli->error;
+		
 		$stmt->bind_result($idFromDb, $firstnameFromDb, $lastnameFromDb);
 		
-		$stmt2 = $mysqli->prepare("SELECT message, valid FROM vpusers WHERE validator=?");
+		$stmt2 = $mysqli->prepare("SELECT message, valid FROM vpamsg WHERE validator=?");
 		echo $mysqli->error;
 		$stmt2->bind_param("i", $idFromDb);
 		$stmt2->bind_result($msgFromDb, $validFromDb);
@@ -20,23 +23,98 @@ $database = "if18_kristian_kp_1";
 		$stmt->execute();
 		$stmt->store_result();
 		
-		while()$stmt->fetch()){
+		while($stmt->fetch()){
 			//panen valideerija nime paika
+			$msgCount = 0;
+			$msghtml= "";
 			$msghtml .="<h3>" .$firstnameFromDb ." " .$lastnameFromDb ."</h3> \n";
+					
 			$stmt2->execute();
 			while($stmt2->fetch()){
+				//$msghtml .="<h3>" .$firstnameFromDb ." " .$lastnameFromDb ."</h3> \n";
 				$msghtml .= "<p><b>";
 				if($validFromDb == 0){
 					$msghtml .= "Keelatud ";
 				}	else {
 					$msghtml .= "Lubatud ";
 				}
-				$msghtml .= "</b" .$msgFromDb ."</p> \n";
+				$msgCount ++;
+				$msghtml .= "</b>" .$msgFromDb ."</p> \n";
 			}
-			$stmt->close;
-			$stmt2->close;
-			$mysqli->close;
+			if ($msgCount != 0){
+				$result .= $msghtml;
+			}
+				
 		}
+		$stmt->close();
+		$stmt2->close();
+		$mysqli->close();
+		return $result;
+	}
+	
+	function listusers(){
+	$notice = "";
+	$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUserName"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+	$stmt = $mysqli->prepare("SELECT name, surname, email FROM vpusers WHERE id !=?");
+	//$stmt = $mysqli->prepare("SELECT firstname, lastname, email, description FROM vpusers, vpuserprofiles WHERE vpuserprofiles.userid=vpusers.id");
+	
+	$mysqli->error;
+	$stmt->bind_param("i", $_SESSION["userId"]);
+	$stmt->bind_result($firstname, $lastname, $email);
+	//$stmt->bind_result($firstname, $lastname, $email, $description);
+	if($stmt->execute()){
+	  $notice .= "<ol> \n";
+	  while($stmt->fetch()){
+
+		  $notice .= "<li>" .$firstname ." " .$lastname .", kasutajatunnus: " .$email ."</li> \n";
+		  //$notice .= "<li>" .$firstname ." " .$lastname .", kasutajatunnus: " .$email ."<br>" .$description ."</li> \n";
+	  }
+	  $notice .= "</ol> \n";
+	} else {
+		$notice = "<p>Kasutajate nimekirja lugemisel tekkis tehniline viga! " .$stmt->error;
+	}
+	
+	$stmt->close();
+	$mysqli->close();
+	return $notice;
+	}
+	
+	
+	function allvalidmessages(){
+	$html = "";
+	$valid = 1;
+	$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUserName"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+	$stmt = $mysqli->prepare("SELECT message FROM vpamsg WHERE valid=? ORDER BY validated DESC");
+	echo $mysqli->error;
+	$stmt->bind_param("i", $valid);
+	$stmt->bind_result($msg);
+	$stmt->execute();
+	while($stmt->fetch()){
+		$html .= "<p>" .$msg ."</p> \n";
+	}
+	$stmt->close();
+	$mysqli->close();
+	if(empty($html)){
+		$html = "<p>Kontrollitud sõnumeid pole.</p>";
+	}
+	return $html;
+	}
+		
+	function validatemsg($editId, $validation){
+	$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUserName"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+	$stmt = $mysqli->prepare("UPDATE vpamsg SET validator=?, valid=?, validated=now() WHERE id=?");
+	$stmt->bind_param("iii", $_SESSION["userId"], $validation, $editId);
+	if($stmt->execute()){
+	  echo "Õnnestus";
+	  header("Location: validatemsg.php");
+	  exit();
+	} else {
+	  echo "Tekkis viga: " .$stmt->error;
+	}
+	$stmt->close();
+	$mysqli->close();
+	}
+	
 	//valideerimata sõnumid	
 	function readallunvalidatedmessages(){
 		$notice = "<ul> \n";
@@ -53,6 +131,7 @@ $database = "if18_kristian_kp_1";
 		$mysqli->close();
 		return $notice;
 	}
+	
 	
 	function readmsgforvalidation($editId){
 		$notice = "";

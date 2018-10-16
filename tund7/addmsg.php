@@ -26,7 +26,7 @@
 	<form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
 	  <label>Sõnum (max 256 märki):</label>
 	  <br>
-	  <textarea rows="4" cols="64" name="message">Kirjuta siia oma sõnum ...</textarea>
+	  <textarea rows="4" cols="64" name="message" placeholder="Kirjuta siia oma sõnum ..."></textarea>
 	  <br>
 	  <input name="submitMessage" type="submit" value="Salvesta sõnum">
 	</form>
@@ -37,6 +37,6 @@
 	?>
     </p>
 	<hr>
-	<p><a href="index_3.php">Tagasi</a> avalehele!</p>
+	<p><a href="index.php">Tagasi</a> avalehele!</p>
   </body>
 </html>
