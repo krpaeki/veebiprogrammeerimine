@@ -16,6 +16,7 @@ window.onload = function (){
 		allThumbs[i].addEventListener("click", openModal);
 	}
 	span.addEventListener("click", closeModal);
+	modalImg.addEventListener("click", closeModal);
 }
 
 function openModal(){
