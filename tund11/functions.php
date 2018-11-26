@@ -8,6 +8,70 @@ $database = "if18_kristian_kp_1";
 	//alustan sessiooni
 	session_start();
 	
+	function readAllPublicPictureThumbsPage(){
+		$privacy = 2;
+		$html = "<p>Kahjuks pilte pole!</p>";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUserName"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		$stmt = $mysqli->prepare("SELECT filename, alttext FROM vp_photos WHERE privacy=? AND deleted IS NULL LIMIT 6");
+		echo $mysqli->error;
+		$stmt->bind_param("i", $privacy);
+		$stmt->bind_result($filenameFromDb, $altFromDb);
+		$stmt->execute();
+		if($stmt->fetch()){
+			$html = '<img src="' .$GLOBALS["thumbDir"] .$filenameFromDb .'" alt="'.$altFromDb .'">' ."\n";
+		}
+		
+		while($stmt->fetch()){
+			$html = '<img src="' .$GLOBALS["thumbDir"] .$filenameFromDb .'" alt="'.$altFromDb .'">' ."\n";
+		}
+		
+		$stmt->close();
+		$mysqli->close();
+		return $html;
+	}
+	
+	/* function readAllPublicPictureThumbs(){
+		$privacy = 2;
+		$html = "<p>Kahjuks pilte pole!</p>";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUserName"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		//$stmt = $mysqli->prepare("SELECT filename, alttext FROM vp_photos WHERE id=(SELECT MAX(id) FROM vp_photos WHERE privacy=? AND deleted IS NULL)");
+		$stmt = $mysqli->prepare("SELECT filename, alttext FROM vp_photos WHERE privacy=? AND deleted IS NULL");
+		echo $mysqli->error;
+		$stmt->bind_param("i", $privacy);
+		$stmt->bind_result($filenameFromDb, $altFromDb);
+		$stmt->execute();
+		if($stmt->fetch()){
+			$html = '<img src="' .$GLOBALS["thumbDir"] .$filenameFromDb .'" alt="'.$altFromDb .'">' ."\n";
+		}
+		
+		while($stmt->fetch()){
+			$html = '<img src="' .$GLOBALS["thumbDir"] .$filenameFromDb .'" alt="'.$altFromDb .'">' ."\n";
+		}
+		
+		$stmt->close();
+		$mysqli->close();
+		return $html;
+	} */
+	
+	function latestPicture($privacy){
+		$html = "<p>Pole pilti, mida näidata!";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUserName"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		$stmt = $mysqli->prepare("SELECT filename, alttext FROM vp_photos WHERE id=(SELECT MAX(id) FROM vp_photos WHERE privacy=? AND deleted IS NULL)");
+		echo $mysqli->error;
+		$stmt->bind_param("i", $privacy);
+		$stmt->bind_result($filenameFromDb, $altFromDb);
+		$stmt->execute();
+		if($stmt->fetch()){
+			//<img src=" " alt="">
+			//$GLOBALS["picDir"] .$filenameFromDb
+			$html = '<img src="' .$GLOBALS["picDir"] .$filenameFromDb .'" alt="'.$altFromDb .'">';
+		}
+		
+		$stmt->close();
+		$mysqli->close();
+		return $html;
+	}
+	
 	function addPhotoData($fileName, $alt, $privacy){
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUserName"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
 	$stmt = $mysqli->prepare("INSERT INTO vp_photos (userID, filename, alttext, privacy) VALUES (?, ?, ?, ?)");
